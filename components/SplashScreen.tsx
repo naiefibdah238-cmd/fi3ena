@@ -114,7 +114,7 @@ export default function SplashScreen() {
           >
             في عنا
           </h1>
-          <p className="text-sm text-[#A34A2F] mt-2 font-medium">
+          <p className="text-sm text-[#A34A2F] mt-5 font-medium">
             دليلك لمحلات البلد
           </p>
         </div>
