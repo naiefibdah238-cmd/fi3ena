@@ -18,7 +18,7 @@ export default function HomePage() {
               في عنا
             </h1>
             <p className="text-[11px] text-gray-400 mt-0.5">
-              كل اللي بدك ياه من البلد
+              دليلك لمحلات البلد
             </p>
           </div>
           <div className="w-9 h-9 rounded-full bg-[#F5E8E3] flex items-center justify-center">
