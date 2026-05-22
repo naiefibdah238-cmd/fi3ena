@@ -194,7 +194,10 @@ export default function StoreDetailClient({ store }: Props) {
       </div>
 
       {/* Sticky action buttons */}
-      <div className="fixed bottom-16 inset-x-0 z-40 bg-white border-t border-gray-100 shadow-lg">
+      <div
+        className="fixed bottom-16 inset-x-0 z-40 bg-white border-t border-gray-100 shadow-lg"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <div className="max-w-lg mx-auto px-4 py-3 flex gap-2">
           {store.phone && (
             <a

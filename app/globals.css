@@ -7,21 +7,49 @@
   --color-accent-dark: #A34A2F;
 }
 
-body {
-  font-family: var(--font-cairo);
+/* ── Base ── */
+html {
+  /* Prevent iOS font size bump on rotate */
+  -webkit-text-size-adjust: 100%;
 }
 
+body {
+  font-family: var(--font-cairo);
+  /* Smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Prevent horizontal overflow */
+  overflow-x: hidden;
+}
+
+/* Remove tap flash on all elements */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Prevent zoom on input focus on iOS (needs font-size >= 16px) */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* ── Leaflet ── */
 .leaflet-container {
   z-index: 0;
 }
 
+/* ── Scrollable chip rows ── */
 .chips-scroll {
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 .chips-scroll::-webkit-scrollbar {
   display: none;
+}
+
+/* ── Safe area helpers ── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top);
 }

@@ -114,7 +114,7 @@ export default function MapClient({ stores, categories }: Props) {
   const gpsActive = gpsState === "tracking";
 
   return (
-    <div className="flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
+    <div className="flex flex-col" style={{ height: "calc(100vh - 64px - env(safe-area-inset-bottom))" }}>
       {/* Category filter chips */}
       <div className="bg-white shadow-sm z-40 px-3 py-2.5 flex gap-2 overflow-x-auto chips-scroll flex-shrink-0">
         {categories.map((cat) => {

@@ -1,0 +1,26 @@
+{
+  "name": "في عنا",
+  "short_name": "في عنا",
+  "description": "كل اللي بدك ياه من البلد — دليل محلات أم الفحم",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F7F4",
+  "theme_color": "#C75B3C",
+  "orientation": "portrait",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
