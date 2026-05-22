@@ -13,6 +13,7 @@ import {
   ChevronUp,
   CheckCircle2,
 } from "lucide-react";
+import Image from "next/image";
 import dynamic from "next/dynamic";
 import { Store, isStoreOpen, getTodayHours, DAY_NAMES } from "@/lib/utils";
 
@@ -65,11 +66,18 @@ export default function StoreDetailClient({ store }: Props) {
       </header>
 
       <div className="max-w-lg mx-auto">
-        {/* Hero image / emoji */}
-        <div className="h-52 bg-[#F5E8E3] flex items-center justify-center">
-          <span className="text-8xl">
-            {CATEGORY_EMOJI[store.category] ?? "🏪"}
-          </span>
+        {/* Hero image */}
+        <div className="h-52 bg-[#F5E8E3] flex items-center justify-center overflow-hidden relative">
+          {store.images[0] && store.images[0] !== "/images/stores/placeholder.jpg" ? (
+            <Image
+              src={store.images[0]}
+              alt={store.name}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <span className="text-8xl">{CATEGORY_EMOJI[store.category] ?? "🏪"}</span>
+          )}
         </div>
 
         <div className="px-4 py-4 space-y-4">

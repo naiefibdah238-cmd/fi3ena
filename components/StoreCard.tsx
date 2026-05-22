@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin } from "lucide-react";
 import { Store, isStoreOpen } from "@/lib/utils";
 
@@ -20,17 +21,29 @@ const CATEGORY_EMOJI: Record<string, string> = {
 
 export default function StoreCard({ store, compact = false }: StoreCardProps) {
   const open = isStoreOpen(store);
+  const hasImage =
+    store.images[0] && store.images[0] !== "/images/stores/placeholder.jpg";
 
   return (
     <Link href={`/store/${store.id}`}>
       <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden flex gap-3 p-3">
         {/* Thumbnail */}
         <div
-          className={`flex-shrink-0 rounded-xl bg-[#F5E8E3] flex items-center justify-center ${
+          className={`flex-shrink-0 rounded-xl overflow-hidden bg-[#F5E8E3] flex items-center justify-center ${
             compact ? "w-14 h-14 text-2xl" : "w-20 h-20 text-4xl"
           }`}
         >
-          {CATEGORY_EMOJI[store.category] ?? "🏪"}
+          {hasImage ? (
+            <Image
+              src={store.images[0]}
+              alt={store.name}
+              width={compact ? 56 : 80}
+              height={compact ? 56 : 80}
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            CATEGORY_EMOJI[store.category] ?? "🏪"
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
