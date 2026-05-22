@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Navigation, X } from "lucide-react";
+import { Navigation, X, Loader2 } from "lucide-react";
 import { Store, Category, isStoreOpen, CATEGORY_COLORS } from "@/lib/utils";
 
 const FullMap = dynamic(() => import("@/components/FullMap"), {
@@ -23,22 +23,78 @@ interface Props {
   categories: Category[];
 }
 
+type UserLocation = { coords: [number, number]; accuracy: number };
+type GpsState = "idle" | "requesting" | "tracking" | "denied" | "unavailable";
+
 export default function MapClient({ stores, categories }: Props) {
   const router = useRouter();
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(
-    null
-  );
-  const mapRef = useRef<{
-    flyTo: (lat: number, lng: number) => void;
-  } | null>(null);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [gpsState, setGpsState] = useState<GpsState>("idle");
+  const watchIdRef = useRef<number | null>(null);
+  const mapRef = useRef<{ flyTo: (lat: number, lng: number) => void } | null>(null);
+
+  const startTracking = useCallback(() => {
+    if (!navigator.geolocation) {
+      setGpsState("unavailable");
+      return;
+    }
+
+    setGpsState("requesting");
+
+    // One-time fast fix first
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation({ coords, accuracy: pos.coords.accuracy });
+        setGpsState("tracking");
+        mapRef.current?.flyTo(coords[0], coords[1]);
+      },
+      (err) => {
+        setGpsState(err.code === 1 ? "denied" : "unavailable");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+
+    // Then watch for real-time updates
+    watchIdRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const coords: [number, number] = [pos.coords.latitude, pos.coords.longitude];
+        setUserLocation({ coords, accuracy: pos.coords.accuracy });
+        setGpsState("tracking");
+      },
+      (err) => {
+        if (err.code === 1) setGpsState("denied");
+      },
+      { enableHighAccuracy: true, maximumAge: 3000 }
+    );
+  }, []);
+
+  // Auto-request GPS when map loads
+  useEffect(() => {
+    // Small delay so the map renders first
+    const t = setTimeout(startTracking, 800);
+    return () => {
+      clearTimeout(t);
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, [startTracking]);
+
+  const handleLocateButton = () => {
+    if (gpsState === "tracking" && userLocation) {
+      // Already tracking — just fly to current position
+      mapRef.current?.flyTo(userLocation.coords[0], userLocation.coords[1]);
+    } else {
+      startTracking();
+    }
+  };
 
   const toggleCategory = (slug: string) => {
     setActiveCategories((prev) =>
-      prev.includes(slug)
-        ? prev.filter((c) => c !== slug)
-        : [...prev, slug]
+      prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug]
     );
   };
 
@@ -47,29 +103,18 @@ export default function MapClient({ stores, categories }: Props) {
       ? stores
       : stores.filter((s) => activeCategories.includes(s.category));
 
-  const locateUser = () => {
-    if (!navigator.geolocation) {
-      alert("المتصفح لا يدعم تحديد الموقع");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const coords: [number, number] = [
-          pos.coords.latitude,
-          pos.coords.longitude,
-        ];
-        setUserLocation(coords);
-        mapRef.current?.flyTo(coords[0], coords[1]);
-      },
-      () => alert("تعذّر الحصول على موقعك")
-    );
-  };
+  const gpsLabel = {
+    idle: "موقعي",
+    requesting: "جارٍ...",
+    tracking: "موقعي",
+    denied: "غير مسموح",
+    unavailable: "غير متاح",
+  }[gpsState];
+
+  const gpsActive = gpsState === "tracking";
 
   return (
-    <div
-      className="flex flex-col"
-      style={{ height: "calc(100vh - 64px)" }}
-    >
+    <div className="flex flex-col" style={{ height: "calc(100vh - 64px)" }}>
       {/* Category filter chips */}
       <div className="bg-white shadow-sm z-40 px-3 py-2.5 flex gap-2 overflow-x-auto chips-scroll flex-shrink-0">
         {categories.map((cat) => {
@@ -84,12 +129,7 @@ export default function MapClient({ stores, categories }: Props) {
                   : "bg-gray-100 text-gray-600 hover:bg-gray-200"
               }`}
               style={
-                active
-                  ? {
-                      backgroundColor:
-                        CATEGORY_COLORS[cat.slug] ?? "#C75B3C",
-                    }
-                  : {}
+                active ? { backgroundColor: CATEGORY_COLORS[cat.slug] ?? "#C75B3C" } : {}
               }
             >
               <span>{cat.icon}</span>
@@ -99,7 +139,7 @@ export default function MapClient({ stores, categories }: Props) {
         })}
       </div>
 
-      {/* Map area */}
+      {/* Map */}
       <div className="flex-1 relative">
         <FullMap
           stores={filteredStores}
@@ -109,14 +149,43 @@ export default function MapClient({ stores, categories }: Props) {
           mapRef={mapRef}
         />
 
+        {/* GPS denied banner */}
+        {(gpsState === "denied" || gpsState === "unavailable") && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-50 bg-white border border-red-200 text-red-600 text-xs font-semibold px-4 py-2 rounded-full shadow-md">
+            {gpsState === "denied"
+              ? "⚠️ السماح بالموقع مطلوب من إعدادات المتصفح"
+              : "⚠️ GPS غير متاح على هذا الجهاز"}
+          </div>
+        )}
+
         {/* My location button */}
         <button
-          onClick={locateUser}
-          className="absolute bottom-6 left-4 z-50 bg-white shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+          onClick={handleLocateButton}
+          disabled={gpsState === "requesting"}
+          className={`absolute bottom-6 left-4 z-50 shadow-lg rounded-full px-4 py-3 flex items-center gap-2 text-sm font-bold transition-all ${
+            gpsActive
+              ? "bg-[#2563EB] text-white"
+              : "bg-white text-gray-700 hover:bg-gray-50"
+          }`}
         >
-          <Navigation size={18} className="text-[#C75B3C]" />
-          <span>موقعي</span>
+          {gpsState === "requesting" ? (
+            <Loader2 size={18} className="animate-spin text-[#C75B3C]" />
+          ) : (
+            <Navigation
+              size={18}
+              className={gpsActive ? "text-white" : "text-[#C75B3C]"}
+              fill={gpsActive ? "white" : "none"}
+            />
+          )}
+          <span>{gpsLabel}</span>
         </button>
+
+        {/* Accuracy badge */}
+        {gpsActive && userLocation && (
+          <div className="absolute bottom-6 left-36 z-50 bg-white/90 backdrop-blur-sm text-xs text-gray-500 font-semibold px-3 py-2 rounded-full shadow">
+            دقة {Math.round(userLocation.accuracy)} م
+          </div>
+        )}
       </div>
 
       {/* Store bottom sheet */}
