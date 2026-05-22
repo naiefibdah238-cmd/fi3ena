@@ -41,7 +41,7 @@ export default function SplashScreen() {
     >
       {/* Logo */}
       <div
-        className="flex flex-col items-center gap-6"
+        className="flex flex-col items-center gap-10"
         style={{
           transform: fading ? "scale(0.95)" : "scale(1)",
           transition: "transform 0.7s ease-in-out",
