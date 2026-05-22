@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# في عنا — Fi 3ena
 
-## Getting Started
+**Arabic-first local business directory for Umm al-Fahm.**
 
-First, run the development server:
+دليل المحلات التجارية في أم الفحم — ابحث، فلتر، وشوف المحلات على الخريطة.
+
+---
+
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Route | Description |
+|---|---|
+| `/` | Home — search bar + category grid + featured stores |
+| `/search` | Full-text Arabic search across all stores |
+| `/category/[slug]` | Category page with multi-select filter chips |
+| `/store/[id]` | Store detail — hours, map, WhatsApp/call/Instagram |
+| `/map` | Interactive map (OpenStreetMap) with all store pins |
+| `/settings` | Settings placeholder |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## How to Add a New Store (إضافة محل جديد)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Edit **`data/stores.json`** and add a new entry:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```json
+{
+  "id": "unique-store-id",
+  "name": "اسم المحل",
+  "category": "clothing",
+  "tags": ["نسائي", "مناسبات"],
+  "neighborhood": "وسط البلد",
+  "address": "شارع X رقم Y، أم الفحم",
+  "lat": 32.5170,
+  "lng": 35.1535,
+  "description": "وصف قصير للمحل",
+  "sells": ["منتج 1", "منتج 2"],
+  "hours": {
+    "sun": "10:00-21:00",
+    "mon": "10:00-21:00",
+    "tue": "10:00-21:00",
+    "wed": "10:00-21:00",
+    "thu": "10:00-21:00",
+    "fri": "10:00-14:00",
+    "sat": "closed"
+  },
+  "phone": "+972XXXXXXXXX",
+  "whatsapp": "+972XXXXXXXXX",
+  "instagram": "handle_without_@",
+  "images": ["/images/stores/your-image.jpg"]
+}
+```
 
-## Deploy on Vercel
+**Available category slugs:** `clothing` | `tailoring` | `groceries` | `bakeries` | `accessories` | `salons`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To add a new category, edit **`data/categories.json`**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## TODO: Migrate to a Real Database
+
+The app uses flat JSON files for data. When ready to scale:
+
+1. Set up **Supabase** — create a `stores` table matching the JSON schema
+2. Replace JSON imports in page files with Supabase client calls
+3. Add a server action for an admin form to write to the DB
+4. `lib/utils.ts` filter functions work on any `Store[]` array — no changes needed there
+
+---
+
+## Tech Stack
+
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS v4** (CSS-based config)
+- **Leaflet + OpenStreetMap** (no API key needed)
+- **Cairo** font from Google Fonts
+- **lucide-react** icons
+- Full RTL (`dir="rtl"`, `lang="ar"`) layout

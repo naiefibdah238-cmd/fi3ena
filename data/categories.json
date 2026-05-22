@@ -1,0 +1,48 @@
+[
+  {
+    "slug": "clothing",
+    "name": "ملابس",
+    "icon": "👗",
+    "filters": {
+      "audience": ["نسائي", "رجالي", "أطفال", "جيل محيّر"],
+      "style": ["مناسبات", "يومي", "محجبات", "إليجانت"]
+    }
+  },
+  {
+    "slug": "tailoring",
+    "name": "خياطة",
+    "icon": "🧵",
+    "filters": {
+      "audience": ["نسائي", "رجالي", "أطفال"],
+      "style": ["تفصيل", "تعديل", "فساتين سهرة"]
+    }
+  },
+  {
+    "slug": "groceries",
+    "name": "سوبر ماركت",
+    "icon": "🛒",
+    "filters": {}
+  },
+  {
+    "slug": "bakeries",
+    "name": "مخابز",
+    "icon": "🥖",
+    "filters": {}
+  },
+  {
+    "slug": "accessories",
+    "name": "إكسسوارات",
+    "icon": "💍",
+    "filters": {
+      "style": ["ذهب", "فضة", "عصري", "كلاسيكي"]
+    }
+  },
+  {
+    "slug": "salons",
+    "name": "صالونات",
+    "icon": "💇",
+    "filters": {
+      "audience": ["نسائي", "رجالي"]
+    }
+  }
+]
