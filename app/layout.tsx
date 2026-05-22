@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cairo } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import SplashScreen from "@/components/SplashScreen";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className={cairo.variable}>
       <body className="bg-[#F8F7F4] font-[family-name:var(--font-cairo)] antialiased">
+        <SplashScreen />
         <main className="min-h-screen pb-20">{children}</main>
         <BottomNav />
       </body>
