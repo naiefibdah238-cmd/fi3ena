@@ -17,7 +17,7 @@ export default function HomePage() {
             <h1 className="text-2xl font-extrabold text-[#C75B3C] leading-none">
               في عنا
             </h1>
-            <p className="text-[11px] text-gray-400 mt-0.5">
+            <p className="text-[11px] text-gray-400 mt-2">
               دليلك لمحلات البلد
             </p>
           </div>
