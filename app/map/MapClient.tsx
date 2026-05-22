@@ -140,7 +140,7 @@ export default function MapClient({ stores, categories }: Props) {
       </div>
 
       {/* Map */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative min-h-0">
         <FullMap
           stores={filteredStores}
           categories={categories}
