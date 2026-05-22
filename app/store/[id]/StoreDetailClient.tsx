@@ -174,17 +174,25 @@ export default function StoreDetailClient({ store }: Props) {
 
           {/* Address + Map */}
           <div className="bg-white rounded-2xl p-4 shadow-sm space-y-3">
-            <div className="flex items-start gap-2">
-              <MapPin
-                size={16}
-                className="text-[#C75B3C] mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <p className="font-bold text-gray-800 text-sm">
-                  {store.neighborhood}
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">{store.address}</p>
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-2">
+                <MapPin size={16} className="text-[#C75B3C] mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-gray-800 text-sm">
+                    {store.neighborhood}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">{store.address}</p>
+                </div>
               </div>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${store.lat},${store.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 flex items-center gap-1.5 bg-[#C75B3C] text-white text-xs font-bold px-3 py-1.5 rounded-full hover:bg-[#A34A2F] transition-colors"
+              >
+                <MapPin size={13} />
+                <span>وجهني</span>
+              </a>
             </div>
             <div className="h-44 rounded-xl overflow-hidden">
               <MiniMap lat={store.lat} lng={store.lng} name={store.name} />
